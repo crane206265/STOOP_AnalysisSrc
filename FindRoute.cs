@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Formats.Asn1;
 using System.IO.Pipelines;
 using System.Linq;
 using System.Reflection;
@@ -29,19 +30,19 @@ namespace RouteFinder
             k = k_val; // *버려도 됨
         }
 
-        public List<int> FindRoute(List<int> idxs, List<double> RAs, List<double> Decs, List<double> ObsTimes)
+        public List<int> FindRoute(List<int> idxs, List<double> RAs, List<double> Decs, List<double> ObsTimes, DateTime starttime)
         {
-            double currenttime = 0;
+            DateTime currenttime = starttime;
             int N = idxs.Count;
-            List<int> SolIdxs = [];
+            List<int> SolIdxs = new List<int>(0);
 
             int epoch = 0; //epoch for break
             while (true)
             {
                 // SubRoute를 탐색할 subgroup 생성
-                List<int> subgroup_idxs = [];
-                List<double> subgroup_RAs = [];
-                List<double> subgroup_Decs = [];
+                List<int> subgroup_idxs = new List<int>(0);
+                List<double> subgroup_RAs = new List<double>(0);
+                List<double> subgroup_Decs = new List<double>(0);
                 List<bool> candidates_temp = TemporalCandidates(RAs, Decs, currenttime, SolIdxs);
                 for (int i = 0; i < N; i++)
                 {
@@ -56,8 +57,8 @@ namespace RouteFinder
                 // SubRoute 계산 및 시간 업데이트
                 (List<int> subroute_temp, double subroutelength) = FindSubRoute(subgroup_idxs, subgroup_RAs, subgroup_Decs, currenttime);
                 SolIdxs.AddRange(subroute_temp);
-                currenttime += subroutelength; // 움직이는데 걸리는 시간
-                for (int i = 0; i < subroute_temp.Count; i++) currenttime += ObsTimes[i]; //총 노출시간
+                currenttime = currenttime.Add(new TimeSpan(0, 0, 0, (int)subroutelength)); // 움직이는데 걸리는 시간
+                for (int i = 0; i < subroute_temp.Count; i++) currenttime = currenttime.Add(new TimeSpan(0, 0, 0, (int)ObsTimes[i])); //총 노출시간
 
                 if (SolIdxs.Count == N) break; // 경로에 모든 천체가 포함되었을 경우 중지
                 // ----------------------------------------------------
@@ -71,14 +72,14 @@ namespace RouteFinder
             return SolIdxs;
         }
 
-        private List<bool> TemporalCandidates(List<double> RAs, List<double> Decs, double time, List<int> DoneIdxs)
+        private List<bool> TemporalCandidates(List<double> RAs, List<double> Decs, DateTime time, List<int> DoneIdxs)
         {
             // [주어신 시각에 관측 가능한 천체들 후보 리스트(bool) 반환]
             // RAs, Decs : 모든 천체들의 좌표
             // time : 현재 시간
             // DoneIdxs : 이미 관측해서 고려 안해도 될 놈들
 
-            List<bool> Candidates = [];
+            List<bool> Candidates = new List<bool>(0);
 
             for (int i = 0; i < RAs.Count; i++)
             {
@@ -94,7 +95,7 @@ namespace RouteFinder
             return Candidates;
         }
 
-        private (List<int>, double) FindSubRoute(List<int> idxs, List<double> RAs, List<double> Decs, double starttime)
+        private (List<int>, double) FindSubRoute(List<int> idxs, List<double> RAs, List<double> Decs, DateTime starttime)
         {
             // [주어진 후보군 내 최적의 경로를 Brute-Force(노가다)로 찾기]
             // 시간각이 가장 뒤쪽에 있는 천체는 도착지점으로 고정.
@@ -124,12 +125,12 @@ namespace RouteFinder
             {
                 for (int j = 0; j < i; j++)
                 {
-                    distances[i, j] = MovingTime(RAs[i], Decs[i], RAs[j], Decs[j]);
-                    distances[j, i] = MovingTime(RAs[j], Decs[j], RAs[i], Decs[i]);
+                    distances[i, j] = MovingTime(RAs[i], Decs[i], RAs[j], Decs[j], starttime);
+                    distances[j, i] = MovingTime(RAs[j], Decs[j], RAs[i], Decs[i], starttime);
                 }
             }
 
-            List<int> SubRouteObjects = []; // Brute-Force 위한 순열을 할 대상들 (마지막 도착지 제외 전부)
+            List<int> SubRouteObjects = new List<int>(0); // Brute-Force 위한 순열을 할 대상들 (마지막 도착지 제외 전부)
             for (int i = 0; i < idxs.Count; i++)
             {
                 if (i == min_HA_idx) continue;
@@ -167,7 +168,7 @@ namespace RouteFinder
                 }
             }
 
-            List<int> sol = []; // subroute의 해답
+            List<int> sol = new List<int>(0); // subroute의 해답
             sol.AddRange(perms[min_pathlength_idx]);
             sol.Add(min_HA_idx); //마지막 천체를 subroute에 추가해주기
             return (sol, min_pathlength);
@@ -206,32 +207,98 @@ namespace RouteFinder
         }
 
 
-        private bool RiseObservable(double RA, double Dec, double time)
+        private bool RiseObservable(double RA, double Dec, DateTime time)
         {
             // 천체가 떴는가
             return true;
         }
 
-        private bool CloudObservable(double RA, double Dec, double time)
+        private bool CloudObservable(double RA, double Dec, DateTime time)
         {
             // 천체가 구름에 가리지 않았는가
             return true;
         }
 
-        private bool ObstacleObservable(double RA, double Dec, double time)
+        private bool ObstacleObservable(double RA, double Dec, DateTime time)
         {
             // 천체가 지형지물 / 장애물에 가리지 않았는가
             return true;
         }
 
-        private double HA_cal(double RA, double Dec, double time)
+        private double HA_cal(double RA, double Dec, DateTime time)
         {
             return 0.0;
         }
 
-        private double MovingTime(double RA1, double Dec1, double RA2, double Dec2)
-        {
-            return 0.0;
+        private double MovingTime(double RA1, double Dec1, double RA2, double Dec2, DateTime time)
+        {   
+            // *** 각도 단위 : 도(degree)
+            // 기기 사양
+            double MotorSpeedRA = 0.0;
+            double MotorSpeedDec = 0.0;
+            double MotorAccelerationRA = 0.0;
+            double MotorAccelerationDec = 0.0;
+            // 최대 속도에 도달하기 까지 걸리는 시간
+            double t0RA = MotorSpeedRA / MotorAccelerationRA;
+            double t0Dec = MotorSpeedDec / MotorAccelerationDec;
+
+            bool meridianpassing = false;
+            if (HA_cal(RA1, Dec1, time) * HA_cal(RA2, Dec2, time) < 0) meridianpassing = true;
+
+            // 움직인 시간 계산을 위해 적경 범위 변환 : [0, 360) --> [-180, 180)
+            // 적경 범위 다시 구현!!!!
+            RA1 = (RA1 % 180) - 180 * (int)(RA1 / 180);
+            RA2 = (RA2 % 180) - 180 * (int)(RA2 / 180);
+
+            // 각 모터가움직인 시간들
+            double movingtimeRA = 0.0;
+            double movingtimeDec = 0.0;
+            if (meridianpassing) // 자오선 넘김이 있을 경우
+            {
+                // movingtimeRA 계산
+                double RA1_op; //RA1의 정 반대 각
+                double RA2_op; //RA2의 정 반대 각
+                RA1_op = ((RA1+180) % 180) - 180 * (int)((RA1+180) / 180); 
+                RA2_op = ((RA2+180) % 180) - 180 * (int)((RA2+180) / 180);
+                if (Math.Abs(RA1_op - RA2_op) < MotorAccelerationRA * t0RA * t0RA) // 최대속도 도달 전에 다시 감속해야 할 경우
+                    movingtimeRA += 2 * Math.Sqrt(Math.Abs(RA1_op - RA2_op) / MotorAccelerationRA);
+                else
+                {
+                    movingtimeRA += 2 * t0RA;
+                    movingtimeRA += (Math.Abs(RA1_op - RA2_op) - MotorAccelerationRA * t0RA * t0RA) / MotorSpeedRA;
+                }
+                
+                // movingtimeDec 계산
+                if ((180 - Dec1 - Dec2) < MotorAccelerationDec * t0Dec * t0Dec) // 최대속도 도달 전에 다시 감속해야 할 경우
+                    movingtimeDec += 2 * Math.Sqrt((180 - Dec1 - Dec2) / MotorAccelerationDec);
+                else
+                {
+                    movingtimeDec += 2 * t0Dec;
+                    movingtimeDec += ((180 - Dec1 - Dec2) - MotorAccelerationDec * t0Dec * t0Dec) / MotorSpeedDec;
+                }
+            }
+            else // 자오선 넘김이 없을 경우
+            {
+                // movingtimeRA 계산
+                if (Math.Abs(RA1 - RA2) < MotorAccelerationRA * t0RA * t0RA) // 최대속도 도달 전에 다시 감속해야 할 경우
+                    movingtimeRA += 2 * Math.Sqrt(Math.Abs(RA1 - RA2) / MotorAccelerationRA);
+                else
+                {
+                    movingtimeRA += 2 * t0RA;
+                    movingtimeRA += (Math.Abs(RA1 - RA2) - MotorAccelerationRA * t0RA * t0RA) / MotorSpeedRA;
+                }
+                
+                // movingtimeDec 계산
+                if (Math.Abs(Dec1 - Dec2) < MotorAccelerationDec * t0Dec * t0Dec) // 최대속도 도달 전에 다시 감속해야 할 경우
+                    movingtimeDec += 2 * Math.Sqrt(Math.Abs(Dec1 - Dec2) / MotorAccelerationDec);
+                else
+                {
+                    movingtimeDec += 2 * t0Dec;
+                    movingtimeDec += (Math.Abs(Dec1 - Dec2) - MotorAccelerationDec * t0Dec * t0Dec) / MotorSpeedDec;
+                }
+            }
+
+            return Math.Max(movingtimeRA, movingtimeDec);
         }
     }
 }
