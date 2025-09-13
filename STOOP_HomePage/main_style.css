@@ -1,0 +1,76 @@
+
+/* for header titles */
+
+#headertitle1 {
+    font-family: "Arial";
+    font-size: 30px;
+    font-weight: bold;
+    margin: 10px 0px 10px 20px; /* 위, 오른쪽, 아래, 왼쪽 순서 */
+    display: inline-block;  /* h1이 블록 요소이므로 인라인 블록으로 변경 */
+}
+
+#headertitle2 {
+    font-family: "Arial";
+    font-size: 20px;
+    font-weight: bold;
+    margin: 10px 0 10px 10px; /* 위, 오른쪽, 아래, 왼쪽 순서 */
+    display: inline-block;  /* h1이 블록 요소이므로 인라인 블록으로 변경 */
+    color : rgba(80, 80, 80, 1);
+}
+
+#headerline {
+    border: none;             /* 기본 선 제거 */
+    height: 1.5px;              /* 두께 */
+    background-color: black;  /* 색 */
+    width: 100%;               /* 길이 */
+    margin: 5px auto;        /* 중앙 정렬 */
+}
+
+/* for nav bar */
+
+#topMenu {
+    height: 40px;
+    width: 100%;    /* 100vw 대신 100%로 주는 게 스크롤바 문제를 줄여줍니다 */
+    margin: 0;
+    padding: 0;
+}
+
+#topMenu ul {
+    margin: 0;
+    padding: 0;
+    display: flex;  /* 가로 정렬 */
+}
+
+#topMenu ul li {
+    list-style: none;
+    flex: 1;                     /* 항목을 균등하게 분배 */
+    color: white;
+    background-color: #2d2d2d;
+    text-align: center;
+    line-height: 40px;
+}
+
+#topMenu .menuLink {
+    text-decoration: none;
+    color: white;
+    display: block;
+    font-size: 15px;
+    font-weight: bold;
+    font-family: "Arial";
+    height: 100%; /* li 전체 높이를 채움 */
+}
+
+#topMenu .menuLink:hover {
+    color: rgb(255, 224, 88);
+    background-color: #414040;
+}
+
+/* for main content */
+
+#content {
+    width: 95% auto;           /* 가로 */
+    min-height: 550px;     /* 최소 세로 */
+    margin: 10px 5px 10px 5px;          /* 바깥 여백 */
+    padding: 10px;          /* 안쪽 여백 */
+    background-color : rgba(0, 0, 0, 0.02);        /* 글자 색 */
+}

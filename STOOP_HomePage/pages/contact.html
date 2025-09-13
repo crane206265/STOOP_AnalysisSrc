@@ -1,0 +1,167 @@
+<section id="contact">
+    <h2 class="title1">Links</h2>
+    <p class="p">STOOP is an open source software. You can check the information about our software in below links.</p>
+    <nav id="contactMenu">
+        <ul>
+            <li><img src="./images/GitHubLogo.png?v=1" alt="GitHub" class="icon"><a class="contactLink" href="https://github.com/crane206265/STOOP">GitHub</a></li>
+            <li><img src="./images/GitHubLogo.png?v=1" alt="GitHub" class="icon"><a class="contactLink" href="https://github.com/crane206265/STOOP">GitHub</a></li>
+        </ul>
+    </nav>
+
+    <hr class="sectionline">
+    <h2 class="title1">Contact Us</h2>
+    <p class="p">The current version of STOOP is release 0.8.0, a beta version, and development on release 1.0.0 is in progress, including the expert mode.
+        If you have any questions or suggestions, please feel free to contact us via email.
+    </p>
+    
+    <section class="developer">
+        <h3 class="name">Byeongmin Park</h3>
+        
+        <div class="devinfo">
+            <div class="row">
+                <span class="label">Contribution:</span>
+                <span class="value">
+                    Conceptualization, Development of telescope mount control module, ASCOM-based software integration, 
+                    GUI Implementation, Validation, Writing
+                </span>
+            </div>
+            <div class="row">
+                <span class="label">Affiliation:</span>
+                <span class="value">Jeonbuk Science High School</span>
+            </div>
+            <div class="row">
+                <span class="label">Email:</span>
+                <span class="value">byeongmin0426@gmail.com</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="developer">
+        <h3 class="name">Hakjin Lee</h3>
+        
+        <div class="devinfo">
+            <div class="row">
+                <span class="label">Contribution:</span>
+                <span class="value">
+                    Conceptualization, Development of observation path optimization algorithm, Software implementation
+                    (optimization module), Writing, Webpage Design
+                </span>
+            </div>
+            <div class="row">
+                <span class="label">Affiliation:</span>
+                <span class="value">Dept. of Physics, KAIST <br> School of Computing, KAIST</span>
+            </div>
+            <div class="row">
+                <span class="label">Email:</span>
+                <span class="value">crane206265@kaist.ac.kr</span>
+            </div>
+        </div>
+    </section>
+
+</section>
+
+<style>
+    /* intro 섹션 스타일 */
+    .title1 {
+        font-size: 25px;
+        font-weight: bold;
+        font-family: "Arial";
+        padding: 5px 10px 5px 10px;
+        margin: 0;
+    }
+
+    .p {
+        font-size: 16px;
+        font-family: "Arial";
+        padding: 5px 10px 5px 10px;
+        margin: 0;
+    }
+
+    #contactMenu {
+        font-family: "Arial";
+        padding: 5px 10px 5px 10px;
+        margin: 0;
+    }
+
+    #contactMenu ul {
+        list-style-type: square; /* 기본 리스트 스타일 제거 */
+        padding: 0 0 0 40px;            /* 기본 패딩 제거 */
+        margin: 0;             /* 기본 마진 제거 */
+    }
+
+    #contactMenu .contactLink {
+        font-size: 16px;
+        font-family: "Arial";
+        padding: 5px 0px 5px 0px;
+        margin: 0;
+        text-decoration: none;
+        font-weight: 600;
+        color: rgb(0, 0, 0);
+    }
+
+    #contactMenu .contactLink:hover {
+        color: rgb(0, 4, 255);
+        text-decoration: underline;
+    }
+
+    .icon {
+        vertical-align: middle;   /* 글자 줄과 세로 위치 맞추기 */
+        margin: 2px 3px 5px 7px;        /* 글자와 간격 */
+        width: 25px;              /* 크기 조절 */
+    }
+
+    .sectionline {
+        border: none;
+        border-top: 1px solid #515151;
+        margin: 10px 0 10px 5px;
+        width: 95%;
+    }
+
+    .developer {
+        font-family: "Arial";
+        width: 95% auto;
+        padding: 5px 10px 5px 10px;
+        margin: 20px 10px 20px 10px;
+        background-color : rgba(0, 0, 0, 0.03);
+    }
+
+    .developer .name {
+        font-size: 21px;
+        font-weight: bold;
+        font-family: "Arial";
+        padding: 10px 10px 5px 10px;
+        margin: 0 auto;
+    }
+
+    .developer .devinfo {
+        font-size: 16px;
+        font-family: "Arial";
+        font-weight: 600;
+        padding: 5px 10px 10px 20px;
+        margin: 0;
+    }
+
+    .developer .devinfo .row{
+        display: grid;
+        grid-template-columns: 140px 1fr;   /* 라벨 140px, 나머지 자동 */
+        column-gap: 16px;
+        align-items: start;
+        margin-bottom: 5px;
+    }
+
+    .developer .devinfo .row .label {
+        font-weight: 600;
+        width: 120px;
+    }
+
+    .developer .devinfo .row .value {
+        flex: 1 1 auto;
+        font-weight: normal;
+        white-space: normal;        /* 공백과 줄바꿈 허용 */
+        overflow-wrap: break-word;  /* 긴 단어 자동 줄바꿈 */
+        word-break: break-word;     /* 표준 */
+        min-width: 0;               /* flex 안에서 줄바꿈 허용 */
+    }
+
+
+</style>

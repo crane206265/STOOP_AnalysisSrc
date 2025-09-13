@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="main_style.css">
+    <title>STOOP | Official Webpage</title>
+</head>
+
+<body>
+    <header> 
+        <span id="headertitle1">STOOP</span>
+        <span id="headertitle2">(Shortest Time Observation Order Program)</span>
+        <hr id="headerline">
+        <nav id="topMenu">
+            <ul>
+                <li><a class="menuLink" href="#" onclick="loadPage('intro.html')">Introduction</a></li>
+                <li><a class="menuLink" href="#" onclick="loadPage('docs.html')">Documents</a></li>
+                <li><a class="menuLink" href="#" onclick="loadPage('install.html')">Installation</a></li>
+                <li><a class="menuLink" href="#" onclick="loadPage('contact.html')">Contact Us</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- 동적으로 내용이 들어갈 영역 -->
+    <main id="content"></main>
+
+    <script>
+        function loadPage(page) {
+            fetch(`pages/${page}`)
+                .then(r => r.text())
+                .then(html => {
+                    document.getElementById('content').innerHTML = html;
+                })
+                .catch(err => console.error(err));
+        }
+
+        window.onload = () => {
+            loadPage("intro.html");
+        };
+    </script>
+</body>
+</html>
